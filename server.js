@@ -4,6 +4,7 @@
 // init project
 var express = require('express');
 var app = express();
+var port = process.env.PORT || 3000;
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -20,12 +21,42 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
+app.get("/api/hello", function(req,res){
+  console.log({greeting: 'hello API'});
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api/timestamp", function(req,res){
+  var now = new Date()
+  res.json({
+    "unix": now.getTime(),
+    "utc": now.toUTCString()
+  });
+});
 
+app.get("/api/timestamp/:date_string",function(req,res){
+  let dateString = req.params.date_string;
+  console.log(parsedIntdateString, typeof dateString, Object.keys(dateString));
 
+  if(parseInt(dateString) > 10000){
+    let unixTime = new Date(parseInt(dateString));
+    res.json({
+      "unix": unixTime.getTime(),
+      "utc": unixTime.toUTCString()
+    })
+  }
+  let passedInValue = new Date(dateString);
+
+  console.log(typeof passedInValue, "<= passed in value");
+  if(passedInValue == "Invalid Date"){
+    res.json({"error":"Invalid Date" });
+  }else{
+    res.json({
+      "unix": passedInValue.getTime(),
+      "utc": passedInValue.toUTCString()
+    })
+  }
+});
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
